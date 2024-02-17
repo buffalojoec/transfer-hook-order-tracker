@@ -22,5 +22,6 @@ crate-type = ["cdylib", "lib"]
 
 [dev-dependencies]
 async-trait = "0.1.77"
+futures-util = "0.3.30"
 solana-program-test = "1.18.2"
 solana-sdk = "1.18.2"
