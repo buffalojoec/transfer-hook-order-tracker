@@ -1,4 +1,4 @@
-// #![cfg(feature = "test-sbf")]
+#![cfg(feature = "test-sbf")]
 #![allow(dead_code)]
 
 use {
@@ -25,7 +25,6 @@ use {
         },
         state::{Account as TokenAccount, AccountState, Mint},
     },
-    spl_transfer_hook_interface::get_extra_account_metas_address,
 };
 
 pub async fn setup() -> ProgramTestContext {
@@ -120,7 +119,7 @@ pub fn setup_empty_protocol_validation_account(
     context: &mut ProgramTestContext,
     mint_address: &Pubkey,
 ) {
-    let validation_address = get_extra_account_metas_address(mint_address, &order_tracker::id());
+    let validation_address = ValidationData::address(mint_address);
     let account_size = ValidationData::get_len();
 
     context.set_account(

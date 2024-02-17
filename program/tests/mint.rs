@@ -1,3 +1,4 @@
+#![cfg(feature = "test-sbf")]
 mod context;
 
 use {

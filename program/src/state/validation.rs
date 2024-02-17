@@ -1,10 +1,12 @@
 use {
     super::{OrderTracker, Profile, Soulbound},
-    solana_program::program_error::ProgramError,
+    solana_program::{program_error::ProgramError, pubkey::Pubkey},
     spl_tlv_account_resolution::{
         account::ExtraAccountMeta, seeds::Seed, state::ExtraAccountMetaList,
     },
-    spl_transfer_hook_interface::instruction::ExecuteInstruction,
+    spl_transfer_hook_interface::{
+        get_extra_account_metas_address, instruction::ExecuteInstruction,
+    },
 };
 
 pub struct ValidationData;
@@ -14,6 +16,10 @@ impl ValidationData {
 
     pub fn get_len() -> usize {
         ExtraAccountMetaList::size_of(Self::NUM_EXTRA_ACCOUNTS).unwrap()
+    }
+
+    pub fn address(mint: &Pubkey) -> Pubkey {
+        get_extra_account_metas_address(mint, &crate::id())
     }
 
     fn extra_metas() -> [ExtraAccountMeta; Self::NUM_EXTRA_ACCOUNTS] {
