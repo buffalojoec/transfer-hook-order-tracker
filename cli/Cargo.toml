@@ -1,7 +1,0 @@
-[package]
-name = "order-tracker-cli"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-order-tracker = { version = "0.1.0", path = "../program" }

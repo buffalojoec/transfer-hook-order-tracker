@@ -817,7 +817,7 @@ dependencies = [
  "once_cell",
  "strsim 0.10.0",
  "termcolor",
- "textwrap 0.16.0",
+ "textwrap 0.16.1",
 ]
 
 [[package]]
@@ -2465,13 +2465,6 @@ dependencies = [
  "spl-token-2022 2.0.1",
  "spl-token-metadata-interface",
  "spl-transfer-hook-interface 0.5.1",
-]
-
-[[package]]
-name = "order-tracker-cli"
-version = "0.1.0"
-dependencies = [
- "order-tracker",
 ]
 
 [[package]]
@@ -5109,9 +5102,9 @@ dependencies = [
 
 [[package]]
 name = "textwrap"
-version = "0.16.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "222a222a5bfe1bba4a77b45ec488a741b3cb8872e5e499451fd7d0129c9c7c3d"
+checksum = "23d434d3f8967a09480fb04132ebe0a3e088c173e6d0ee7897abbdf4eab0f8b9"
 
 [[package]]
 name = "thiserror"

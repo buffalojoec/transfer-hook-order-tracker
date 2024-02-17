@@ -5,4 +5,4 @@ pub mod instruction;
 pub mod processor;
 pub mod state;
 
-solana_program::declare_id!("AGmLBzK3SQB66qN1VZBim1f1DAmeR4o2kQUctHRfs8g8");
+solana_program::declare_id!("9QXSTPR4Qfv2KxPKEsCsJQHDTyPeTvJPNGuBhmqHYQVB");
