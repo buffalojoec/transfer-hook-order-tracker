@@ -1,8 +1,10 @@
 mod context;
 
 use {
-    crate::context::{setup_soulbound_token_account, setup_wallet_with_soulbound_token_account},
-    context::{setup, setup_wallet, ProtocolTestContext},
+    context::{
+        setup, setup_soulbound_token_account, setup_wallet,
+        setup_wallet_with_soulbound_token_account, ProtocolTestContext,
+    },
     order_tracker::{error::ProtocolError, state::Profile},
     solana_program::{program_error::ProgramError, pubkey::Pubkey},
     solana_program_test::tokio,

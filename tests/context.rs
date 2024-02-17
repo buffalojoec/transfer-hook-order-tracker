@@ -1,6 +1,9 @@
+// #![cfg(feature = "test-sbf")]
+#![allow(dead_code)]
+
 use {
     async_trait::async_trait,
-    order_tracker::state::{MintAuthority, Soulbound},
+    order_tracker::state::{validation::ValidationData, MintAuthority, Soulbound},
     solana_program::program_error::ProgramError,
     solana_program_test::{
         processor, BanksClient, BanksClientError, ProgramTest, ProgramTestContext,
@@ -22,6 +25,7 @@ use {
         },
         state::{Account as TokenAccount, AccountState, Mint},
     },
+    spl_transfer_hook_interface::get_extra_account_metas_address,
 };
 
 pub async fn setup() -> ProgramTestContext {
@@ -88,6 +92,47 @@ pub async fn setup() -> ProgramTestContext {
         .unwrap();
 
     context
+}
+
+pub fn setup_empty_protocol_mint_account(context: &mut ProgramTestContext) -> Keypair {
+    let mint = Keypair::new();
+
+    let account_size = ExtensionType::try_calculate_account_len::<Mint>(&[
+        ExtensionType::TransferHook,
+        ExtensionType::MetadataPointer,
+    ])
+    .unwrap();
+
+    context.set_account(
+        &mint.pubkey(),
+        &Account {
+            data: vec![0; account_size],
+            lamports: 1_000_000_000,
+            owner: spl_token_2022::id(),
+            ..Account::default()
+        }
+        .into(),
+    );
+    mint
+}
+
+pub fn setup_empty_protocol_validation_account(
+    context: &mut ProgramTestContext,
+    mint_address: &Pubkey,
+) {
+    let validation_address = get_extra_account_metas_address(mint_address, &order_tracker::id());
+    let account_size = ValidationData::get_len();
+
+    context.set_account(
+        &validation_address,
+        &Account {
+            data: vec![0; account_size],
+            lamports: 1_000_000_000,
+            owner: order_tracker::id(),
+            ..Account::default()
+        }
+        .into(),
+    );
 }
 
 pub fn setup_wallet(context: &mut ProgramTestContext) -> Keypair {
