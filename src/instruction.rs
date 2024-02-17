@@ -49,7 +49,7 @@ pub enum ProtocolInstruction {
     /// 4. []    Souldbound Mint Authority
     /// 5. []    Token-2022 Program
     /// 6. []    System Program
-    InitializeProfile(InitializeProfileInstruction),
+    InitializeProfile,
 }
 
 impl ProtocolInstruction {
@@ -63,9 +63,8 @@ impl ProtocolInstruction {
                 buf.push(1);
                 buf.append(&mut data.try_to_vec().unwrap());
             }
-            Self::InitializeProfile(data) => {
+            Self::InitializeProfile => {
                 buf.push(2);
-                buf.append(&mut data.try_to_vec().unwrap());
             }
         }
         buf
@@ -82,10 +81,7 @@ impl ProtocolInstruction {
                 let data = CreateMintInstruction::try_from_slice(rest)?;
                 Self::CreateMint(data)
             }
-            2 => {
-                let data = InitializeProfileInstruction::try_from_slice(rest)?;
-                Self::InitializeProfile(data)
-            }
+            2 => Self::InitializeProfile,
             _ => return Err(ProgramError::InvalidInstructionData),
         })
     }
@@ -137,8 +133,7 @@ pub fn create_mint(
     }
 }
 
-pub fn initialize_profile(wallet_address: &Pubkey, username: &str) -> Instruction {
-    let username = username.to_string();
+pub fn initialize_profile(wallet_address: &Pubkey) -> Instruction {
     Instruction {
         program_id: crate::id(),
         accounts: vec![
@@ -153,7 +148,6 @@ pub fn initialize_profile(wallet_address: &Pubkey, username: &str) -> Instructio
             AccountMeta::new_readonly(spl_token_2022::id(), false),
             AccountMeta::new_readonly(solana_program::system_program::id(), false),
         ],
-        data: ProtocolInstruction::InitializeProfile(InitializeProfileInstruction { username })
-            .pack(),
+        data: ProtocolInstruction::InitializeProfile.pack(),
     }
 }

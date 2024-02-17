@@ -47,6 +47,10 @@ pub fn process_create_mint(
     }
 
     // Create the mint.
+    // Extensions:
+    // - Transfer Hook
+    // - Metadata Pointer
+    // - TokenMetadata
     invoke(
         &spl_token_2022::extension::transfer_hook::instruction::initialize(
             &spl_token_2022::id(),
@@ -78,6 +82,7 @@ pub fn process_create_mint(
         .unwrap(),
         &[mint_info.clone()],
     )?;
+    // TokenMetadata is initialized after the mint has been initialized.
     invoke(
         &spl_token_metadata_interface::instruction::initialize(
             &spl_token_2022::id(),

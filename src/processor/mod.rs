@@ -23,9 +23,9 @@ pub fn process(program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> P
                 msg!("Instruction: CreateMint");
                 mint::process_create_mint(program_id, accounts, data)
             }
-            ProtocolInstruction::InitializeProfile(data) => {
+            ProtocolInstruction::InitializeProfile => {
                 msg!("Instruction: InitializeProfile");
-                profile::process_initialize_profile(program_id, accounts, data)
+                profile::process_initialize_profile(program_id, accounts)
             }
         }
     } else if let Ok(instruction) = TransferHookInstruction::unpack(input) {

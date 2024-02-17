@@ -7,12 +7,11 @@ use {
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
 pub struct Profile {
     pub wallet_address: Pubkey,
-    pub username: String,
     pub order_volume: u64,
 }
 
 impl Profile {
-    pub const MAX_LEN: usize = 141; // 140 characters
+    pub const LEN: usize = 32 + 8;
 
     pub fn seed<'s>() -> &'s [u8] {
         b"profile"
@@ -26,11 +25,10 @@ impl Profile {
         Self::address_with_bump(wallet_address).0
     }
 
-    pub fn new(wallet_address: &Pubkey, username: String) -> Self {
+    pub fn new(wallet_address: &Pubkey) -> Self {
         let wallet_address = *wallet_address;
         Self {
             wallet_address,
-            username,
             order_volume: 0,
         }
     }
@@ -38,12 +36,12 @@ impl Profile {
     pub fn create_account_instruction(wallet_address: &Pubkey) -> Instruction {
         let lamports = solana_program::rent::Rent::get()
             .unwrap()
-            .minimum_balance(Self::MAX_LEN);
+            .minimum_balance(Self::LEN);
         solana_program::system_instruction::create_account(
             wallet_address,
             &Self::address(wallet_address),
             lamports,
-            Self::MAX_LEN as u64,
+            Self::LEN as u64,
             &crate::id(),
         )
     }

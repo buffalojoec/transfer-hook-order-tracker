@@ -11,16 +11,13 @@ use {
     solana_sdk::{account::Account, signer::Signer},
 };
 
-const USERNAME: &str = "joec";
-
 #[tokio::test]
 async fn fail_incorrect_soulbound_mint() {
     let mut context = setup().await;
 
     let wallet = setup_wallet(&mut context);
 
-    let mut instruction =
-        order_tracker::instruction::initialize_profile(&wallet.pubkey(), USERNAME);
+    let mut instruction = order_tracker::instruction::initialize_profile(&wallet.pubkey());
     instruction.accounts[0].pubkey = Pubkey::new_unique();
 
     context
@@ -38,8 +35,7 @@ async fn fail_incorrect_soulbound_token_account() {
 
     let wallet = setup_wallet(&mut context);
 
-    let mut instruction =
-        order_tracker::instruction::initialize_profile(&wallet.pubkey(), USERNAME);
+    let mut instruction = order_tracker::instruction::initialize_profile(&wallet.pubkey());
     instruction.accounts[1].pubkey = Pubkey::new_unique();
 
     context
@@ -62,7 +58,6 @@ async fn fail_soulbound_token_account_has_tokens() {
         .expect_error(
             &[order_tracker::instruction::initialize_profile(
                 &wallet.pubkey(),
-                USERNAME,
             )],
             &[&wallet],
             (0, ProtocolError::SoulboundTokenAccountHasTokens),
@@ -90,29 +85,9 @@ async fn fail_profile_exists() {
         .expect_error(
             &[order_tracker::instruction::initialize_profile(
                 &wallet.pubkey(),
-                USERNAME,
             )],
             &[&wallet],
             (0, ProtocolError::ProfileAlreadyInitialized),
-        )
-        .await;
-}
-
-#[tokio::test]
-async fn fail_username_too_long() {
-    let mut context = setup().await;
-    let super_long_username = "a".repeat(Profile::MAX_LEN + 1);
-
-    let wallet = setup_wallet_with_soulbound_token_account(&mut context);
-
-    context
-        .expect_error(
-            &[order_tracker::instruction::initialize_profile(
-                &wallet.pubkey(),
-                &super_long_username,
-            )],
-            &[&wallet],
-            (0, ProtocolError::UsernameTooLong),
         )
         .await;
 }
@@ -123,8 +98,7 @@ async fn fail_wallet_not_signer() {
 
     let wallet = setup_wallet_with_soulbound_token_account(&mut context);
 
-    let mut instruction =
-        order_tracker::instruction::initialize_profile(&wallet.pubkey(), USERNAME);
+    let mut instruction = order_tracker::instruction::initialize_profile(&wallet.pubkey());
     instruction.accounts[3].is_signer = false;
 
     context
@@ -146,7 +120,6 @@ async fn success() {
         .expect_success(
             &[order_tracker::instruction::initialize_profile(
                 &wallet.pubkey(),
-                USERNAME,
             )],
             &[&wallet],
         )

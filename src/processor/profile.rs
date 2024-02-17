@@ -1,7 +1,6 @@
 use {
     crate::{
         error::ProtocolError,
-        instruction::InitializeProfileInstruction,
         state::{MintAuthority, Profile, Soulbound},
     },
     borsh::BorshSerialize,
@@ -15,11 +14,7 @@ use {
     spl_token_2022::{extension::StateWithExtensions, state::Account as TokenAccount},
 };
 
-pub fn process_initialize_profile(
-    _program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    data: InitializeProfileInstruction,
-) -> ProgramResult {
+pub fn process_initialize_profile(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
 
     // Accounts expected by this instruction:
@@ -30,7 +25,6 @@ pub fn process_initialize_profile(
     // 4. []    Souldbound Mint Authority
     // 5. []    Token-2022 Program
     // 6. []    System Program
-
     let soulbound_mint_info = next_account_info(accounts_iter)?;
     let soulbound_token_account_info = next_account_info(accounts_iter)?;
     let profile_info = next_account_info(accounts_iter)?;
@@ -38,8 +32,6 @@ pub fn process_initialize_profile(
     let soulbound_mint_authority_info = next_account_info(accounts_iter)?;
     let _token_2022_program_info = next_account_info(accounts_iter)?;
     let _system_program_info = next_account_info(accounts_iter)?;
-
-    let InitializeProfileInstruction { username } = data;
 
     // Assert the correct soulbound mint was provided.
     if soulbound_mint_info.key != &Soulbound::address() {
@@ -63,11 +55,6 @@ pub fn process_initialize_profile(
     // Assert the user's profile does not exist.
     if profile_info.lamports() != 0 {
         return Err(ProtocolError::ProfileAlreadyInitialized.into());
-    }
-
-    // Assert the username isn't too long.
-    if username.len() > Profile::MAX_LEN {
-        return Err(ProtocolError::UsernameTooLong.into());
     }
 
     // Assert the user's wallet is the signer.
@@ -103,7 +90,7 @@ pub fn process_initialize_profile(
         )?;
     }
 
-    let profile = Profile::new(wallet_info.key, username);
+    let profile = Profile::new(wallet_info.key);
     profile.serialize(&mut &mut profile_info.data.borrow_mut()[..])?;
 
     Ok(())
