@@ -65,16 +65,16 @@ pub fn process_execute(
     let accounts_iter = &mut accounts.iter();
 
     // Accounts expected by this hook:
-    // 0. []  Source
-    // 1. []  Mint
-    // 2. []  Destination
-    // 3. []  Source Owner
-    // 4. []  Validation Account
-    // 5. []  Token-2022 Program
-    // 6. []  Associated Token Program
-    // 7. []  Soulbound Mint
-    // 8. []  Source Soulbound Token Account
-    // 9. [w] Source Profile
+    // 0.  []  Source
+    // 1.  []  Mint
+    // 2.  []  Destination
+    // 3.  []  Source Owner
+    // 4.  []  Validation Account
+    // 5.  []  Token-2022 Program
+    // 6.  []  Associated Token Program
+    // 7.  []  Soulbound Mint
+    // 8.  []  Source Soulbound Token Account
+    // 9.  [w] Source Profile
     // 10. []  Destination Soulbound Token Account
     // 11. []  Destination Profile
     // 12. [w] Order Tracker
