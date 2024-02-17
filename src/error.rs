@@ -16,4 +16,6 @@ pub enum ProtocolError {
     ProfileNotInitialized,
     #[error("Username too long")]
     UsernameTooLong,
+    #[error("Incorrect validation account was provided")]
+    IncorrectValidationAccount,
 }

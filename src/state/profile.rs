@@ -12,7 +12,7 @@ pub struct Profile {
 }
 
 impl Profile {
-    pub const MAX_LEN: usize = 140; // 140 characters
+    pub const MAX_LEN: usize = 141; // 140 characters
 
     pub fn seed<'s>() -> &'s [u8] {
         b"profile"

@@ -10,7 +10,6 @@ use {
         hash::Hash,
         instruction::{Instruction, InstructionError},
         program_option::COption,
-        program_pack::Pack,
         pubkey::Pubkey,
         signature::Keypair,
         signer::Signer,
@@ -48,11 +47,14 @@ pub async fn setup() -> ProgramTestContext {
         },
     );
     // Add the soulbound mint.
+    let account_size =
+        ExtensionType::try_calculate_account_len::<Mint>(&[ExtensionType::NonTransferable])
+            .unwrap();
     program_test.add_account(
         Soulbound::address(),
         Account {
             lamports: 1_000_000_000,
-            data: vec![0; Mint::LEN],
+            data: vec![0; account_size],
             owner: spl_token_2022::id(),
             ..Account::default()
         },

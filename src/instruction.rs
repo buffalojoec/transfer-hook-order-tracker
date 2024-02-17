@@ -1,8 +1,25 @@
-use solana_program::{
-    instruction::{AccountMeta, Instruction},
-    program_error::ProgramError,
-    pubkey::Pubkey,
+use {
+    borsh::{BorshDeserialize, BorshSerialize},
+    solana_program::{
+        instruction::{AccountMeta, Instruction},
+        program_error::ProgramError,
+        pubkey::Pubkey,
+    },
+    spl_transfer_hook_interface::get_extra_account_metas_address,
 };
+
+#[derive(BorshDeserialize, BorshSerialize)]
+pub struct CreateMintInstruction {
+    pub decimals: u8,
+    pub name: String,
+    pub symbol: String,
+    pub uri: String,
+}
+
+#[derive(BorshDeserialize, BorshSerialize)]
+pub struct InitializeProfileInstruction {
+    pub username: String,
+}
 
 pub enum ProtocolInstruction {
     /// Initializes the protocol.
@@ -14,6 +31,14 @@ pub enum ProtocolInstruction {
     /// 2. [w+s] Payer
     /// 3. []    Token-2022 Program
     InitializeProtocol,
+    /// Creates a new protocol mint.
+    ///
+    /// Accounts expected by this instruction:
+    /// 0. [w]   Mint
+    /// 1. [w]   Validation Account
+    /// 2. [s]   Mint Authority
+    /// 3. []    Token-2022 Program
+    CreateMint(CreateMintInstruction),
     /// Initializes a profile for a user and mints a soulbound token.
     ///
     /// Accounts expected by this instruction:
@@ -24,38 +49,45 @@ pub enum ProtocolInstruction {
     /// 4. []    Souldbound Mint Authority
     /// 5. []    Token-2022 Program
     /// 6. []    System Program
-    InitializeProfile {
-        /// The user's username.
-        username: String,
-    },
+    InitializeProfile(InitializeProfileInstruction),
 }
 
 impl ProtocolInstruction {
     pub fn pack(&self) -> Vec<u8> {
-        let mut buf = Vec::new();
+        let mut buf = vec![];
         match self {
-            ProtocolInstruction::InitializeProtocol => {
+            Self::InitializeProtocol => {
                 buf.push(0);
             }
-            ProtocolInstruction::InitializeProfile { username } => {
+            Self::CreateMint(data) => {
                 buf.push(1);
-                buf.extend_from_slice(username.as_bytes());
+                buf.append(&mut data.try_to_vec().unwrap());
             }
-        };
+            Self::InitializeProfile(data) => {
+                buf.push(2);
+                buf.append(&mut data.try_to_vec().unwrap());
+            }
+        }
         buf
     }
 
     pub fn unpack(input: &[u8]) -> Result<Self, ProgramError> {
-        let instruction = input.first().ok_or(ProgramError::InvalidInstructionData)?;
-        match instruction {
-            0 => Ok(ProtocolInstruction::InitializeProtocol),
-            1 => {
-                let username = String::from_utf8(input[1..].to_vec())
-                    .map_err(|_| ProgramError::InvalidInstructionData)?;
-                Ok(ProtocolInstruction::InitializeProfile { username })
-            }
-            _ => Err(ProgramError::InvalidInstructionData),
+        if input.is_empty() {
+            return Err(ProgramError::InvalidInstructionData);
         }
+        let (discriminator, rest) = input.split_first().unwrap();
+        Ok(match discriminator {
+            0 => Self::InitializeProtocol,
+            1 => {
+                let data = CreateMintInstruction::try_from_slice(rest)?;
+                Self::CreateMint(data)
+            }
+            2 => {
+                let data = InitializeProfileInstruction::try_from_slice(rest)?;
+                Self::InitializeProfile(data)
+            }
+            _ => return Err(ProgramError::InvalidInstructionData),
+        })
     }
 }
 
@@ -69,6 +101,39 @@ pub fn initialize_protocol(payer_address: &Pubkey) -> Instruction {
             AccountMeta::new_readonly(spl_token_2022::id(), false),
         ],
         data: ProtocolInstruction::InitializeProtocol.pack(),
+    }
+}
+
+pub fn create_mint(
+    mint_address: &Pubkey,
+    mint_authority: &Pubkey,
+    decimals: u8,
+    name: &str,
+    symbol: &str,
+    uri: &str,
+) -> Instruction {
+    let mint_authority = *mint_authority;
+    let name = name.to_string();
+    let symbol = symbol.to_string();
+    let uri = uri.to_string();
+    Instruction {
+        program_id: crate::id(),
+        accounts: vec![
+            AccountMeta::new(*mint_address, false),
+            AccountMeta::new(
+                get_extra_account_metas_address(mint_address, &crate::id()),
+                false,
+            ),
+            AccountMeta::new(mint_authority, true),
+            AccountMeta::new_readonly(spl_token_2022::id(), false),
+        ],
+        data: ProtocolInstruction::CreateMint(CreateMintInstruction {
+            decimals,
+            name,
+            symbol,
+            uri,
+        })
+        .pack(),
     }
 }
 
@@ -88,6 +153,7 @@ pub fn initialize_profile(wallet_address: &Pubkey, username: &str) -> Instructio
             AccountMeta::new_readonly(spl_token_2022::id(), false),
             AccountMeta::new_readonly(solana_program::system_program::id(), false),
         ],
-        data: ProtocolInstruction::InitializeProfile { username }.pack(),
+        data: ProtocolInstruction::InitializeProfile(InitializeProfileInstruction { username })
+            .pack(),
     }
 }

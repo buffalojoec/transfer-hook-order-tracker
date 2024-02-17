@@ -30,6 +30,10 @@ pub fn process_init(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramRe
 
     // Create the soulbound mint.
     invoke(
+        &Soulbound::initialize_non_transferrable_instruction(),
+        &[soulbound_mint_info.clone(), payer_info.clone()],
+    )?;
+    invoke(
         &Soulbound::initialize_mint_instruction(),
         &[soulbound_mint_info.clone(), payer_info.clone()],
     )?;

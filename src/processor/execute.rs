@@ -27,14 +27,19 @@ pub fn process_execute(
     // 2. [] Destination
     // 3. [] Source Owner
     // 4. [] Validation Account
-    // 5. [] Source Owner Soulbound Token Account
-    // 6. [w] Source Owner Profile
-    // 7. [w] Order Tracker
+    // 5. [] Token-2022 Program
+    // 6. [] Associated Token Program
+    // 7. [] Soulbound Mint
+    // 8. [] Source Owner Soulbound Token Account
+    // 9. [w] Source Owner Profile
+    // 10. [w] Order Tracker
     let _source_info = next_account_info(accounts_iter)?;
     let mint_info = next_account_info(accounts_iter)?;
     let _destination_info = next_account_info(accounts_iter)?;
     let source_owner_info = next_account_info(accounts_iter)?;
     let _validation_account_info = next_account_info(accounts_iter)?;
+    let _token_2022_program_info = next_account_info(accounts_iter)?;
+    let _associated_token_program_info = next_account_info(accounts_iter)?;
     let source_owner_soulbound_token_account_info = next_account_info(accounts_iter)?;
     let source_owner_profile_info = next_account_info(accounts_iter)?;
     let order_tracker_info = next_account_info(accounts_iter)?;

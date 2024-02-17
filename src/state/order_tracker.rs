@@ -12,8 +12,11 @@ pub struct OrderTracker {
 }
 
 impl OrderTracker {
+    pub fn seed<'s>() -> &'s [u8] {
+        b"order_tracker"
+    }
     pub fn address() -> Pubkey {
-        Pubkey::find_program_address(&[b"order_tracker"], &crate::id()).0
+        Pubkey::find_program_address(&[Self::seed()], &crate::id()).0
     }
 
     /// Increment the volume of orders for a mint.

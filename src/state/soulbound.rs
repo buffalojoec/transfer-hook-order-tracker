@@ -23,6 +23,14 @@ impl Soulbound {
         )
     }
 
+    pub fn initialize_non_transferrable_instruction() -> Instruction {
+        spl_token_2022::instruction::initialize_non_transferable_mint(
+            &spl_token_2022::id(),
+            &Self::address(),
+        )
+        .unwrap()
+    }
+
     pub fn initialize_mint_instruction() -> Instruction {
         spl_token_2022::instruction::initialize_mint2(
             &spl_token_2022::id(),

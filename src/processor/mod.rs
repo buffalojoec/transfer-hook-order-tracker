@@ -1,5 +1,6 @@
 mod execute;
 mod init;
+mod mint;
 mod profile;
 
 use {
@@ -18,9 +19,13 @@ pub fn process(program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> P
                 msg!("Instruction: InitializeProtocol");
                 init::process_init(program_id, accounts)
             }
-            ProtocolInstruction::InitializeProfile { username } => {
+            ProtocolInstruction::CreateMint(data) => {
+                msg!("Instruction: CreateMint");
+                mint::process_create_mint(program_id, accounts, data)
+            }
+            ProtocolInstruction::InitializeProfile(data) => {
                 msg!("Instruction: InitializeProfile");
-                profile::process_initialize_profile(program_id, accounts, username)
+                profile::process_initialize_profile(program_id, accounts, data)
             }
         }
     } else if let Ok(instruction) = TransferHookInstruction::unpack(input) {
