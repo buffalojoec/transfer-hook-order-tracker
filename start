@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cargo build-sbf
+cargo build --release
+
+./target/release/order-tracker-cli

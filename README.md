@@ -13,4 +13,12 @@ recording the number of tokens transferred.
 
 > Note: Don't forget to update the program's ID in `declare_id`!
 
+```
+./start
+```
+
+```
+cargo test-sbf
+```
+
 ![diagram](./diagram.jpg)

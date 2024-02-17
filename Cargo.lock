@@ -2468,6 +2468,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "order-tracker-cli"
+version = "0.1.0"
+dependencies = [
+ "order-tracker",
+]
+
+[[package]]
 name = "os_str_bytes"
 version = "6.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
